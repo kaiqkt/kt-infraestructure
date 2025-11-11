@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kt-gateway-api
+  config:
+    import: optional:configtree:/run/secrets/
+  data:
+    redis:
+      host: gateway_dependencies_redis
+      port: 6379
+      password: ${gateway_redis_password}
+  cache:
+    type: redis
+
+authentication-service-url: http://authentication-backend:8080
+policies-cache-ttl: 1
+
+gateway:
+  client-id: 01K97V58JAZ2F2C5BGEJQVJVT7
+  resource-servers:
+    - name: kt-authentication-api
+      uri: /api/auth
+      host: http://authentication-backend:8080

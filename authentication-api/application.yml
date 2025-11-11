@@ -1,0 +1,20 @@
+---
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kt-authentication-api
+  config:
+    import: optional:configtree:/run/secrets/
+  datasource:
+    url: jdbc:postgresql://database:5432/kt_authentication
+    username: kt_user
+    password: ${authentication_database_password}
+    driver-class-name: org.postgresql.Driver
+
+authentication:
+  session-ttl: 604800
+  issuer: kaiqkt
+  access-token-ttl: 900
+  access-token-secret: ${access_token_secret}

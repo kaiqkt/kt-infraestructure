@@ -1,0 +1,25 @@
+---
+services:
+  database:
+    image: postgres:latest
+    secrets:
+      - authentication_database_password
+    networks:
+      - default
+    environment:
+      POSTGRES_DB: kt_authentication
+      POSTGRES_USER: kt_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/authentication_database_password
+    volumes:
+      - postgresql_data:/var/lib/postgresql
+
+volumes:
+  postgresql_data:
+
+secrets:
+  authentication_database_password:
+    external: true
+
+networks:
+  default:
+    driver: overlay

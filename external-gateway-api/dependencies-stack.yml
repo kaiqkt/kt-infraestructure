@@ -1,0 +1,20 @@
+---
+services:
+  redis:
+    image: redis:latest
+    secrets:
+      - gateway_redis_password
+    command: ["sh", "-c", "redis-server --requirepass $$(cat /run/secrets/gateway_redis_password)"]
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+
+secrets:
+  gateway_redis_password:
+    external: true
+
+networks:
+  default:
+    driver: overlay

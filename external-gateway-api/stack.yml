@@ -1,0 +1,68 @@
+services:
+  traefik:
+    image: traefik:v3.1
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 80
+        target: 80
+      - mode: host
+        protocol: tcp
+        published: 443
+        target: 443
+    networks:
+      - proxy
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+
+  gateway-backend:
+    image: kaiqkt/kt-gateway-api:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=gateway_proxy"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.backend.rule=Host(`backend.swarm.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letencrypt"
+    configs:
+      - source: spring_config
+        target: /app/config/application.yml
+    networks:
+      - authentication_default
+      - gateway_dependencies_default
+      - proxy
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          memory: 2G # Remove
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/application.yml
+      JAVA_TOOL_OPTIONS: -Xmx512m -XX:+UseContainerSupport # Remove
+    secrets:
+      - gateway_redis_password
+
+volumes:
+  traefik:
+  letsencrypt:
+
+configs:
+  spring_config:
+    file: ./application.yml
+
+secrets:
+  gateway_redis_password:
+    external: true
+
+networks:
+  proxy:
+    driver: overlay
+  gateway_dependencies_default:
+    external: true
+  authentication_default:
+    external: true
