@@ -18,7 +18,7 @@ services:
       - ./letsencrypt:/letsencrypt
 
   gateway-backend:
-    image: kaiqkt/kt-gateway-api:latest
+    image: ghcr.io/kaiqkt/kt-gateway-api:latest
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=gateway_proxy"

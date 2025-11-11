@@ -1,7 +1,7 @@
 ---
 services:
   authentication-backend:
-    image: kaiqkt/kt-authentication-api:latest
+    image: ghcr.io/kaiqkt/kt-authentication-api:latest
     configs:
       - source: spring_config
         target: /app/config/application.yml
