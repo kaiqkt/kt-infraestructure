@@ -10,7 +10,7 @@ spring:
   datasource:
     url: jdbc:postgresql://database:5432/kt_authentication
     username: kt_user
-    password: ${authentication_database_password}
+    password: ${authentication-database-password}
     driver-class-name: org.postgresql.Driver
 
 authentication:

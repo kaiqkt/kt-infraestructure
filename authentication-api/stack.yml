@@ -1,15 +1,15 @@
 ---
 services:
   authentication-backend:
-    image: ghcr.io/kaiqkt/kt-authentication-api:latest
+    # image: ghcr.io/kaiqkt/kt-authentication-api
+    image: kaiqkt/kt-authentication-api:local
     configs:
       - source: spring_config
         target: /app/config/application.yml
     environment:
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/application.yml
-      JAVA_TOOL_OPTIONS: -Xmx512m -XX:+UseContainerSupport # Remove
     secrets:
-      - authentication_database_password
+      - authentication-database-password
       - access_token_secret
     networks:
       - authentication_dependencies_default
@@ -19,16 +19,12 @@ services:
       replicas: 1
       update_config:
         order: start-first
-      resources:
-        limits:
-          memory: 2G # Remove
-
 configs:
   spring_config:
     file: ./application.yml
 
 secrets:
-  authentication_database_password:
+  authentication-database-password:
     external: true
   access_token_secret:
     external: true

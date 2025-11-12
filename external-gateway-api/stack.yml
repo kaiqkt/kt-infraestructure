@@ -18,7 +18,8 @@ services:
       - ./letsencrypt:/letsencrypt
 
   gateway-backend:
-    image: ghcr.io/kaiqkt/kt-gateway-api:latest
+    # image: ghcr.io/kaiqkt/kt-gateway-api
+    image: kaiqkt/kt-gateway-api:local
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=gateway_proxy"
@@ -33,19 +34,16 @@ services:
       - authentication_default
       - gateway_dependencies_default
       - proxy
+      - default
     deploy:
       mode: replicated
       replicas: 1
       update_config:
         order: start-first
-      resources:
-        limits:
-          memory: 2G # Remove
     environment:
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/application.yml
-      JAVA_TOOL_OPTIONS: -Xmx512m -XX:+UseContainerSupport # Remove
     secrets:
-      - gateway_redis_password
+      - gateway-redis-password
 
 volumes:
   traefik:
@@ -56,11 +54,13 @@ configs:
     file: ./application.yml
 
 secrets:
-  gateway_redis_password:
+  gateway-redis-password:
     external: true
 
 networks:
   proxy:
+    driver: overlay
+  default:
     driver: overlay
   gateway_dependencies_default:
     external: true

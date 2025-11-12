@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "kt-authentication-api"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["authentication-backend:8080"]
+
+  - job_name: "kt-gateway-api"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["gateway-backend:8080"]

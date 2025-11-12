@@ -1,0 +1,75 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    networks:
+      # - gateway_default
+      - authentication_default
+      - default
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 9090
+        target: 9090
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/grafana_admin_user
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_LOGS_ENABLE_LOKI=true
+      - GF_LOKI_URL=http://loki:3100
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 3000
+        target: 3000
+    networks:
+      - default
+    secrets:
+      - grafana_admin_user
+      - grafana_admin_password
+    volumes:
+      - grafana-data:/var/lib/grafana
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  loki:
+    image: grafana/loki:latest
+    networks:
+      - default
+    volumes:
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:latest
+    networks:
+      - default
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+
+secrets:
+  grafana_admin_user:
+    external: true
+  grafana_admin_password:
+    external: true
+
+volumes:
+  grafana-data:
+  prometheus-data:
+  loki-data:
+
+networks:
+  # gateway_default:
+  #   external: true
+  authentication_default:
+    external: true
+  default:
+    driver: overlay
