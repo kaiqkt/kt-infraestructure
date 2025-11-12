@@ -56,6 +56,30 @@ docker service scale my_service=3
 docker service rollback <service_name>
 ```
 
+### Update a service
+
+To update a service, you typically update its image or configuration and then redeploy the stack.
+
+**Update a service image:**
+```bash
+docker service update --image <new_image_name> <service_name>
+```
+*Example:*
+```bash
+docker service update --image my_app:2.0 my_app_service
+```
+
+**Update a service with a new compose file:**
+If you've made changes to your `stack.yml` (e.g., environment variables, ports, replicas), you can redeploy the stack to apply the updates.
+
+```bash
+docker stack deploy --compose-file <path-to-your-compose-file.yml> <stack_name>
+```
+*Example:*
+```bash
+docker stack deploy --compose-file authentication-api/stack.yml authentication-api
+```
+
 **View service logs:**
 ```bash
 docker service logs <service_name>
