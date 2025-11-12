@@ -96,6 +96,45 @@ docker config create <config_name> <path-to-config-file>
 docker config create my_config ./config.json
 ```
 
+**Updating a config:**
+
+Simply changing the source file of a config is not enough to trigger a service update. The recommended way to update a config is to create a new, versioned config and update the service to use it.
+
+1.  **Create a new version of the config:**
+    ```bash
+    docker config create <config_name>_v2 <path-to-new-config-file>
+    ```
+    *Example:*
+    ```bash
+    docker config create my_config_v2 ./new_config.json
+    ```
+
+2.  **Update your `stack.yml` to reference the new config:**
+    ```yaml
+    services:
+      myapp:
+        image: my_app_image
+        configs:
+          - source: my_config_v2
+            target: /app/config.json
+    
+    configs:
+      my_config_v2:
+        external: true
+    ```
+
+3.  **Redeploy the stack:**
+    This will perform a rolling update of the service to use the new config.
+    ```bash
+    docker stack deploy --compose-file <path-to-your-compose-file.yml> <stack_name>
+    ```
+
+4.  **(Optional) Remove the old config:**
+    Once you have verified that the update was successful, you can remove the old config.
+    ```bash
+    docker config rm <config_name>
+    ```
+
 ### Docker Secrets
 
 **Create a secret from a file:**
