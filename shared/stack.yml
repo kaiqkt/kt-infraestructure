@@ -8,11 +8,6 @@ services:
     volumes:
       - prometheus-data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - mode: host
-        protocol: tcp
-        published: 9090
-        target: 9090
 
   grafana:
     image: grafana/grafana:latest
